@@ -1,4 +1,5 @@
 # Agent Execution Partnership AEE
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Latest Release](https://img.shields.io/github/v/release/eli-labz/Agent-Execution-Partnership)](https://github.com/eli-labz/Agent-Execution-Partnership/releases) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![GitHub Stars](https://img.shields.io/github/stars/eli-labz/Agent-Execution-Partnership?style=social)](https://github.com/eli-labz/Agent-Execution-Partnership/stargazers)
 
 The missing layer between AI reasoning and real-world execution.
 
