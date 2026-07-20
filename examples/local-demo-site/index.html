@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Execution Partnership — Live Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --accent:   #58a6ff;
+      --green:    #3fb950;
+      --amber:    #d29922;
+      --red:      #f85149;
+      --purple:   #bc8cff;
+      --radius:   8px;
+      --mono:     "Cascadia Code", "Fira Code", ui-monospace, monospace;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 1.25rem; font-weight: 800; color: #0d1117;
+      flex-shrink: 0;
+    }
+    .brand h1 { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
+    .brand p  { font-size: 0.78rem; color: var(--muted); }
+    .api-pill {
+      margin-left: auto;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .api-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red);
+      transition: background .4s;
+    }
+    .api-dot.live { background: var(--green); }
+
+    /* ── Layout ───────────────────────────────────────────── */
+    .page { display: grid; grid-template-columns: 280px 1fr; gap: 0; min-height: calc(100vh - 66px); }
+
+    /* ── Sidebar ──────────────────────────────────────────── */
+    aside {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    aside h2 { font-size: 0.7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+
+    /* Pipeline steps */
+    .pipeline { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .6rem .5rem;
+      border-radius: var(--radius);
+      cursor: default;
+      transition: background .2s;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute; left: 1.05rem; top: 2.4rem;
+      width: 2px; height: calc(100% - 1.4rem);
+      background: var(--border);
+    }
+    .step.active  { background: rgba(88,166,255,.08); }
+    .step.done    { }
+    .step.denied  { }
+    .step.waiting { }
+
+    .step-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--border); color: var(--muted);
+      display: grid; place-items: center;
+      font-size: .9rem; flex-shrink: 0;
+      border: 2px solid var(--border);
+      transition: all .3s; position: relative; z-index: 1;
+    }
+    .step.active  .step-icon { border-color: var(--accent);  background: rgba(88,166,255,.15); color: var(--accent); }
+    .step.done    .step-icon { border-color: var(--green);   background: rgba(63,185,80,.15);  color: var(--green); }
+    .step.denied  .step-icon { border-color: var(--red);     background: rgba(248,81,73,.15);  color: var(--red); }
+    .step.waiting .step-icon { border-color: var(--amber);   background: rgba(210,153,34,.15); color: var(--amber); }
+
+    .step-label { font-size: .82rem; line-height: 1.3; }
+    .step-label strong { display: block; font-weight: 600; }
+    .step-label span   { font-size: .73rem; color: var(--muted); }
+    .step-status {
+      font-size: .65rem; font-weight: 700; letter-spacing: .04em;
+      padding: 1px 5px; border-radius: 3px;
+      margin-top: 2px; display: inline-block;
+    }
+    .badge-active  { background: rgba(88,166,255,.18);  color: var(--accent); }
+    .badge-done    { background: rgba(63,185,80,.18);   color: var(--green); }
+    .badge-denied  { background: rgba(248,81,73,.18);   color: var(--red); }
+    .badge-waiting { background: rgba(210,153,34,.18);  color: var(--amber); }
+
+    /* ── Scenarios ────────────────────────────────────────── */
+    .scenario-list { display: flex; flex-direction: column; gap: .5rem; }
+    .scenario-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: .6rem .75rem;
+      text-align: left; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      font-size: .82rem; line-height: 1.35;
+    }
+    .scenario-btn:hover  { border-color: var(--accent); background: rgba(88,166,255,.05); }
+    .scenario-btn.active { border-color: var(--accent); background: rgba(88,166,255,.1); }
+    .scenario-btn strong { display: block; font-size: .75rem; margin-bottom: 2px; }
+    .s-pill {
+      display: inline-block; font-size: .62rem; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px; margin-right: 4px;
+    }
+    .s-read   { background: rgba(63,185,80,.18);   color: var(--green); }
+    .s-high   { background: rgba(210,153,34,.18);  color: var(--amber); }
+    .s-deny   { background: rgba(248,81,73,.18);   color: var(--red); }
+
+    .run-btn {
+      width: 100%;
+      background: var(--accent);
+      border: none; border-radius: var(--radius);
+      color: #0d1117; font-weight: 700; font-size: .9rem;
+      padding: .65rem; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .run-btn:disabled { opacity: .45; cursor: default; }
+    .run-btn:not(:disabled):hover { opacity: .85; }
+
+    /* ── Main panel ───────────────────────────────────────── */
+    main { display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Concept bar */
+    .concept-bar {
+      display: flex; gap: .5rem; flex-wrap: wrap;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .concept {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .75rem; color: var(--muted);
+      padding: .3rem .6rem; border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .concept b { color: var(--text); }
+
+    /* Content area */
+    .content { display: grid; grid-template-rows: 1fr 220px; flex: 1; overflow: hidden; }
+
+    /* Inspector */
+    .inspector {
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .inspector-idle {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem; color: var(--muted);
+      text-align: center;
+    }
+    .idle-icon { font-size: 3rem; opacity: .4; }
+    .inspector-idle h3 { font-size: 1rem; color: var(--text); }
+    .inspector-idle p  { font-size: .83rem; max-width: 380px; line-height: 1.6; }
+
+    .stage-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .stage-card-header {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: .82rem; font-weight: 600;
+    }
+    .stage-card-header .step-icon { width: 22px; height: 22px; font-size: .7rem; border-width: 1px; }
+    .stage-card-body { padding: 0; }
+
+    .kv-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .kv-table td { padding: .45rem 1rem; border-bottom: 1px solid rgba(48,54,61,.6); vertical-align: top; }
+    .kv-table td:first-child { color: var(--muted); width: 38%; font-weight: 500; }
+    .kv-table tr:last-child td { border-bottom: none; }
+
+    pre.json-block {
+      font-family: var(--mono);
+      font-size: .74rem;
+      line-height: 1.55;
+      background: #0d1117;
+      padding: 1rem;
+      overflow-x: auto;
+      border-radius: 0 0 var(--radius) var(--radius);
+      color: #b0bec5;
+    }
+    .json-key    { color: #79c0ff; }
+    .json-str    { color: #a5d6a7; }
+    .json-num    { color: #ffa657; }
+    .json-bool   { color: var(--purple); }
+    .json-null   { color: var(--muted); }
+
+    /* Approval gate overlay */
+    .approval-gate {
+      background: var(--surface);
+      border: 1px solid var(--amber);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .approval-gate h3 { color: var(--amber); margin-bottom: .5rem; font-size: .95rem; }
+    .approval-gate p  { font-size: .82rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.5; }
+    .gate-buttons { display: flex; gap: .5rem; }
+    .gate-btn {
+      flex: 1; border: none; border-radius: var(--radius);
+      padding: .55rem; font-weight: 700; font-size: .82rem;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .gate-btn:hover { opacity: .85; }
+    .gate-approve { background: var(--green); color: #0d1117; }
+    .gate-deny    { background: var(--red);   color: #fff; }
+
+    /* Audit log */
+    .audit-panel {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .audit-header {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .6rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: .75rem; font-weight: 600; flex-shrink: 0;
+    }
+    .audit-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .audit-body { overflow-y: auto; flex: 1; padding: .4rem .5rem; }
+    .audit-entry {
+      display: flex; gap: .75rem; align-items: baseline;
+      padding: .3rem .75rem;
+      font-family: var(--mono); font-size: .72rem;
+      border-radius: 4px;
+      animation: fadein .3s ease;
+    }
+    .audit-entry:hover { background: rgba(255,255,255,.03); }
+    @keyframes fadein { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+    .audit-time  { color: var(--muted); flex-shrink: 0; }
+    .audit-type  { font-weight: 700; flex-shrink: 0; min-width: 160px; }
+    .audit-type.t-created   { color: var(--accent); }
+    .audit-type.t-allowed   { color: var(--green); }
+    .audit-type.t-denied    { color: var(--red); }
+    .audit-type.t-verified  { color: var(--green); }
+    .audit-type.t-approval  { color: var(--amber); }
+    .audit-type.t-executed  { color: var(--purple); }
+    .audit-type.t-cancelled { color: var(--red); }
+    .audit-meta { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Chain integrity */
+    .chain-ok {
+      font-size: .72rem;
+      margin-left: auto;
+      color: var(--green);
+      display: flex; align-items: center; gap: .3rem;
+    }
+    .chain-ok.invalid { color: var(--red); }
+
+    .is-hidden { display: none; }
+
+    /* Hidden safe-target form for Playwright adapter */
+    .safe-target {
+      display: none;
+    }
+
+    /* Risk table */
+    .risk-section { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+    .risk-section h2 { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .75rem; }
+    .risk-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .risk-table th { text-align: left; color: var(--muted); font-weight: 600; padding: .35rem .75rem; border-bottom: 1px solid var(--border); }
+    .risk-table td { padding: .4rem .75rem; border-bottom: 1px solid rgba(48,54,61,.5); }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-class { font-family: var(--mono); font-size: .72rem; }
+    .rc-ro  { color: var(--green); }
+    .rc-rw  { color: var(--accent); }
+    .rc-cw  { color: #ffa657; }
+    .rc-fi  { color: var(--amber); }
+    .rc-pa  { color: var(--red); }
+    .rc-ps  { color: var(--red); font-weight: 700; }
+
+    /* Spinner */
+    .spin {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid rgba(88,166,255,.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; }
+      aside { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">A</div>
+  <div class="brand">
+    <h1>Agent Execution Partnership</h1>
+    <p>The missing layer between AI reasoning and real-world execution</p>
+  </div>
+  <div class="api-pill">
+    <span class="api-dot" id="api-dot"></span>
+    <span id="api-label">API offline</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ── Sidebar ── -->
+  <aside>
+    <div>
+      <h2>Pipeline</h2>
+      <div class="pipeline" id="pipeline">
+        <div class="step" id="s-task">
+          <div class="step-icon">📋</div>
+          <div class="step-label">
+            <strong>Task Contract</strong>
+            <span>Goal, constraints, risk budget, allowed tools</span>
+          </div>
+        </div>
+        <div class="step" id="s-obs">
+          <div class="step-icon">👁</div>
+          <div class="step-label">
+            <strong>Observe State</strong>
+            <span>Snapshot with freshness deadline</span>
+          </div>
+        </div>
+        <div class="step" id="s-propose">
+          <div class="step-icon">📝</div>
+          <div class="step-label">
+            <strong>Propose Action</strong>
+            <span>Operation + channel + risk class</span>
+          </div>
+        </div>
+        <div class="step" id="s-policy">
+          <div class="step-icon">⚖️</div>
+          <div class="step-label">
+            <strong>Policy Evaluate</strong>
+            <span>Allow / Deny / Require approval</span>
+          </div>
+        </div>
+        <div class="step" id="s-approval">
+          <div class="step-icon">👤</div>
+          <div class="step-label">
+            <strong>Approval Gate</strong>
+            <span>Human decision for high-risk ops</span>
+          </div>
+        </div>
+        <div class="step" id="s-exec">
+          <div class="step-icon">⚡</div>
+          <div class="step-label">
+            <strong>Execute</strong>
+            <span>Single bounded action via adapter</span>
+          </div>
+        </div>
+        <div class="step" id="s-verify">
+          <div class="step-icon">✅</div>
+          <div class="step-label">
+            <strong>Verify</strong>
+            <span>Expected effects confirmed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2>Scenarios</h2>
+      <div class="scenario-list">
+        <button class="scenario-btn active" data-scenario="read" id="btn-read">
+          <strong><span class="s-pill s-read">READ_ONLY</span> Auto-approved</strong>
+          Agent GETs the health endpoint via HTTP. Policy allows immediately. Execution verified.
+        </button>
+        <button class="scenario-btn" data-scenario="financial" id="btn-financial">
+          <strong><span class="s-pill s-high">FINANCIAL</span> Approval required</strong>
+          Agent proposes a financial action. Human approval gate triggers.
+        </button>
+        <button class="scenario-btn" data-scenario="denied" id="btn-denied">
+          <strong><span class="s-pill s-deny">DENIED</span> Prohibited tool</strong>
+          Agent requests a tool not in the task contract. Policy denies immediately.
+        </button>
+      </div>
+    </div>
+
+    <button class="run-btn" id="run-btn">▶ Run Scenario</button>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main>
+    <div class="concept-bar">
+      <span class="concept"><b>Default deny</b> — all actions start blocked</span>
+      <span class="concept"><b>One action at a time</b> — bounded execution</span>
+      <span class="concept"><b>Immutable audit</b> — hash-chained ledger</span>
+      <span class="concept"><b>Verify every effect</b> — not just "did it run"</span>
+    </div>
+
+    <div class="content">
+      <div class="inspector" id="inspector">
+        <div class="inspector-idle" id="idle-state">
+          <div class="idle-icon">🛡</div>
+          <h3>Pick a scenario and press Run</h3>
+          <p>
+            Each scenario walks the full AEP pipeline — from task contract through policy evaluation,
+            optional human approval, execution, and post-execution verification.
+            Every step produces a live JSON payload and an audit ledger entry.
+          </p>
+        </div>
+      </div>
+
+      <div class="audit-panel">
+        <div class="audit-header">
+          <span class="audit-dot"></span>
+          Audit Ledger
+          <span id="chain-status" class="chain-ok is-hidden">⛓ chain intact</span>
+        </div>
+        <div class="audit-body" id="audit-body"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Hidden safe-target form for Playwright adapter tests -->
+<div class="safe-target" aria-hidden="true">
+  <form id="demo-form">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" />
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" />
+    <button id="submit-btn" type="submit">Submit</button>
+  </form>
+  <div id="status" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+  const API = "http://127.0.0.1:8000";
+  const DELAY = ms => new Promise(r => setTimeout(r, ms));
+
+  // ── API health check ───────────────────────────────────────────
+  async function checkApi() {
+    try {
+      const r = await fetch(API + "/health", { signal: AbortSignal.timeout(1500) });
+      const d = await r.json();
+      if (d.status === "ok") {
+        document.getElementById("api-dot").classList.add("live");
+        document.getElementById("api-label").textContent = "API live";
+        return true;
+      }
+    } catch (_) {}
+    document.getElementById("api-dot").classList.remove("live");
+    document.getElementById("api-label").textContent = "API offline";
+    return false;
+  }
+  checkApi();
+  setInterval(checkApi, 8000);
+
+  // ── Scenario selection ─────────────────────────────────────────
+  let selectedScenario = "read";
+  document.querySelectorAll(".scenario-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".scenario-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedScenario = btn.dataset.scenario;
+      resetPipeline();
+    });
+  });
+
+  // ── Pipeline state ─────────────────────────────────────────────
+  const STEPS = ["s-task","s-obs","s-propose","s-policy","s-approval","s-exec","s-verify"];
+  function resetPipeline() {
+    STEPS.forEach(id => {
+      const el = document.getElementById(id);
+      el.className = "step";
+      const lbl = el.querySelector(".step-label");
+      const old = lbl.querySelector(".step-status");
+      if (old) old.remove();
+    });
+    document.getElementById("idle-state").style.display = "";
+    const cards = document.querySelectorAll(".stage-card,.approval-gate");
+    cards.forEach(c => c.remove());
+  }
+
+  function setStep(id, state) {
+    const el = document.getElementById(id);
+    el.className = "step " + state;
+    const lbl = el.querySelector(".step-label");
+    let badge = lbl.querySelector(".step-status");
+    if (!badge) { badge = document.createElement("span"); badge.className = "step-status"; lbl.appendChild(badge); }
+    const map = { active:"badge-active", done:"badge-done", denied:"badge-denied", waiting:"badge-waiting" };
+    const text = { active:"running…", done:"done", denied:"denied", waiting:"waiting" };
+    badge.className = "step-status " + (map[state]||"");
+    badge.textContent = text[state]||state;
+  }
+
+  // ── Inspector cards ────────────────────────────────────────────
+  function hideIdle() {
+    document.getElementById("idle-state").style.display = "none";
+  }
+
+  function renderJson(obj) {
+    const str = JSON.stringify(obj, null, 2);
+    return str
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+      .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+      .replace(/: (\d+\.?\d*)/g, ': <span class="json-num">$1</span>')
+      .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
+      .replace(/: null/g, ': <span class="json-null">null</span>');
+  }
+
+  function addCard(icon, title, stateClass, kvRows, json) {
+    hideIdle();
+    const insp = document.getElementById("inspector");
+    const card = document.createElement("div");
+    card.className = "stage-card";
+
+    const header = document.createElement("div");
+    header.className = "stage-card-header";
+
+    const ico = document.createElement("div");
+    ico.className = "step-icon " + stateClass;
+    ico.textContent = icon;
+    header.appendChild(ico);
+
+    const t = document.createElement("span");
+    t.textContent = title;
+    header.appendChild(t);
+    card.appendChild(header);
+
+    if (kvRows && kvRows.length) {
+      const body = document.createElement("div");
+      body.className = "stage-card-body";
+      const table = document.createElement("table");
+      table.className = "kv-table";
+      kvRows.forEach(([k,v]) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${k}</td><td>${v}</td>`;
+        table.appendChild(tr);
+      });
+      body.appendChild(table);
+      card.appendChild(body);
+    }
+
+    if (json) {
+      const pre = document.createElement("pre");
+      pre.className = "json-block";
+      pre.innerHTML = renderJson(json);
+      card.appendChild(pre);
+    }
+
+    insp.appendChild(card);
+    card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return card;
+  }
+
+  function addApprovalGate(actionId, onApprove, onDeny) {
+    hideIdle();
+    const insp = document.getElementById("inspector");
+    const gate = document.createElement("div");
+    gate.className = "approval-gate";
+    gate.id = "approval-gate";
+    gate.innerHTML = `
+      <h3>⚠ Human Approval Required</h3>
+      <p>This action is classified <strong>FINANCIAL</strong>. The AEE cannot proceed without explicit human authorization. Review the proposed action and decide.</p>
+      <div class="gate-buttons">
+        <button class="gate-btn gate-approve" id="gate-approve-btn">✓ Approve</button>
+        <button class="gate-btn gate-deny"    id="gate-deny-btn">✗ Deny</button>
+      </div>
+    `;
+    insp.appendChild(gate);
+    gate.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    document.getElementById("gate-approve-btn").onclick = () => { gate.remove(); onApprove(); };
+    document.getElementById("gate-deny-btn").onclick    = () => { gate.remove(); onDeny(); };
+  }
+
+  // ── Audit log ──────────────────────────────────────────────────
+  function addAudit(type, meta, typeClass) {
+    const body = document.getElementById("audit-body");
+    const entry = document.createElement("div");
+    entry.className = "audit-entry";
+    const now = new Date().toISOString().substring(11,23);
+    entry.innerHTML = `
+      <span class="audit-time">${now}</span>
+      <span class="audit-type ${typeClass}">${type}</span>
+      <span class="audit-meta">${meta}</span>
+    `;
+    body.appendChild(entry);
+    entry.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }
+
+  async function verifyChain() {
+    try {
+      const r = await fetch(API + "/audit/verify");
+      const d = await r.json();
+      const el = document.getElementById("chain-status");
+      el.classList.remove("is-hidden");
+      el.className = "chain-ok" + (d.ok ? "" : " invalid");
+      el.textContent = d.ok ? "⛓ chain intact" : "⚠ chain broken";
+    } catch (_) {}
+  }
+
+  // ── safe idempotency key ───────────────────────────────────────
+  function uid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      const r = Math.random()*16|0, v = c==="x"?r:(r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+
+  // ── API helpers ────────────────────────────────────────────────
+  async function apiPost(path, body) {
+    const r = await fetch(API + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch(_) { data = { raw: text }; }
+    return { status: r.status, ok: r.ok, data };
+  }
+
+  // ── Run button ─────────────────────────────────────────────────
+  document.getElementById("run-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("run-btn");
+    btn.disabled = true;
+    resetPipeline();
+
+    const live = await checkApi();
+    if (!live) {
+      addCard("⚠","API Unavailable","denied",[
+        ["hint","Start the API with <code>aep serve</code>, then retry"],
+      ], null);
+      addAudit("api_unavailable","cannot reach "+API,"t-denied");
+      btn.disabled = false;
+      return;
+    }
+
+    if (selectedScenario === "read")      await runRead(btn);
+    else if (selectedScenario === "financial") await runFinancial(btn);
+    else                                   await runDenied(btn);
+
+    await verifyChain();
+    btn.disabled = false;
+  });
+
+  // ══════════════════════════════════════════════════════════════
+  // Scenario 1: READ_ONLY — auto-approved
+  // ══════════════════════════════════════════════════════════════
+  async function runRead(btn) {
+    const ik = uid();
+
+    // Step 1 — Task Contract
+    setStep("s-task","active");
+    await DELAY(400);
+    const taskBody = {
+      goal: "Verify the AEP service is healthy via an HTTP GET",
+      human_principal: "operator",
+      agent_identity: "demo-agent",
+      completion_criteria: ["service_health_confirmed"],
+      allowed_tools: ["http_get"],
+      idempotency_key: ik,
+      risk_budget: 100,
+      data_classification: "internal",
+    };
+    const taskResp = await apiPost("/tasks", taskBody);
+    setStep("s-task","done");
+    addCard("📋","Task Contract","done",[
+      ["task_id",      `<code>${taskResp.data.task_id}</code>`],
+      ["goal",         taskResp.data.goal],
+      ["allowed_tools","<code>http_get</code>"],
+      ["risk_budget",  "100 pts"],
+      ["outcome",      "<span style='color:var(--green)'>Created ✓</span>"],
+    ], taskResp.data);
+    addAudit("task_created","id="+taskResp.data.task_id+" goal=service_health_check","t-created");
+    await DELAY(500);
+
+    // Step 2 — Observe
+    setStep("s-obs","active");
+    await DELAY(400);
+    const obsBody = {
+      task_id: taskResp.data.task_id,
+      source_adapter: "http",
+      source_type: "service_status",
+      freshness_deadline: new Date(Date.now() + 300000).toISOString(),
+      state_version: "v1",
+      confidence: 0.99,
+      raw_evidence_reference: "http://127.0.0.1:8000/health",
+      correlation_id: uid(),
+    };
+    const obsResp = await apiPost("/observations", obsBody);
+    setStep("s-obs","done");
+    addCard("👁","Observation Recorded","done",[
+      ["observation_id", `<code>${obsResp.data.observation_id}</code>`],
+      ["source_type",    "service_status"],
+      ["confidence",     "0.99"],
+      ["freshness",      "valid for 5 min"],
+      ["outcome",        "<span style='color:var(--green)'>Fresh ✓</span>"],
+    ], obsResp.data);
+    addAudit("observation_recorded","version=v1 source=http/service_status confidence=0.99","t-created");
+    await DELAY(500);
+
+    // Step 3 — Propose
+    setStep("s-propose","active");
+    await DELAY(400);
+    const actionBody = {
+      task_id: taskResp.data.task_id,
+      operation: "http_get",
+      channel: "http",
+      target: { url: "http://127.0.0.1:8000/health" },
+      arguments: { method: "GET" },
+      risk_class: "READ_ONLY",
+      idempotency_key: uid(),
+      requested_by: "demo-agent",
+      observation_version: "v1",
+      expected_effects: ["service_health_confirmed"],
+    };
+    setStep("s-propose","done");
+    addCard("📝","Action Proposed","done",[
+      ["operation",  "<code>http_get</code>"],
+      ["channel",    "http"],
+      ["risk_class", "<span style='color:var(--green)'>READ_ONLY</span>"],
+      ["target",     "<code>http://127.0.0.1:8000/health</code>"],
+      ["outcome",    "<span style='color:var(--green)'>Proposal formed ✓</span>"],
+    ], actionBody);
+    addAudit("action_proposed","op=http_get channel=http risk=READ_ONLY","t-created");
+    await DELAY(500);
+
+    // Step 4 — Policy evaluate
+    setStep("s-policy","active");
+    await DELAY(600);
+    const policyResp = await apiPost("/policy/evaluate", actionBody);
+    setStep("s-policy","done");
+    addCard("⚖️","Policy Decision","done",[
+      ["decision",       `<span style='color:var(--green)'>${policyResp.data.decision}</span>`],
+      ["reason_codes",   policyResp.data.reason_codes?.join(", ")||"—"],
+      ["required_approvals","none"],
+      ["policy_version", policyResp.data.policy_version],
+      ["outcome",        "<span style='color:var(--green)'>Allowed — no approval needed ✓</span>"],
+    ], policyResp.data);
+    addAudit("policy_allowed","decision=allow risk=READ_ONLY","t-allowed");
+    await DELAY(400);
+
+    // Step 5 — Skip approval (READ_ONLY)
+    setStep("s-approval","done");
+    addCard("👤","Approval Gate","done",[
+      ["result","<span style='color:var(--green)'>Skipped — READ_ONLY actions do not require human approval</span>"],
+    ], null);
+    await DELAY(300);
+
+    // Step 6 — Execute
+    setStep("s-exec","active");
+    await DELAY(700);
+    const execResp = await apiPost("/actions/execute", actionBody);
+    if (!execResp.ok) {
+      setStep("s-exec","denied");
+      addCard("⚡","Execution Failed","denied",[
+        ["error", execResp.data.detail||JSON.stringify(execResp.data)],
+      ], execResp.data);
+      addAudit("execution_failed","status="+execResp.status,"t-denied");
+      return;
+    }
+    const ev = execResp.data.evidence;
+    const vr = execResp.data.verification;
+    setStep("s-exec","done");
+    addCard("⚡","Action Executed","done",[
+      ["execution_id", `<code>${ev.execution_id}</code>`],
+      ["adapter",      ev.adapter],
+      ["status",       `<span style='color:var(--green)'>${ev.status}</span>`],
+      ["artifacts",    ev.artifacts?.length||0],
+      ["outcome",      "<span style='color:var(--green)'>Completed ✓</span>"],
+    ], ev);
+    addAudit("action_executed","id="+ev.execution_id+" status="+ev.status,"t-executed");
+    await DELAY(500);
+
+    // Step 7 — Verify
+    setStep("s-verify","active");
+    await DELAY(500);
+    setStep("s-verify","done");
+    addCard("✅","Verification Result","done",[
+      ["verdict",                    `<span style='color:var(--green)'>${vr.verdict}</span>`],
+      ["expected_effects_verified",  vr.expected_effects_verified ? "✓ yes" : "✗ no"],
+      ["prohibited_effects_absent",  vr.prohibited_effects_absent ? "✓ yes" : "✗ no"],
+      ["confidence",                 vr.confidence],
+      ["recommended_next_state",     vr.recommended_next_state],
+    ], vr);
+    addAudit("action_verified","verdict="+vr.verdict+" confidence="+vr.confidence,"t-verified");
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // Scenario 2: FINANCIAL — approval gate
+  // ══════════════════════════════════════════════════════════════
+  async function runFinancial(btn) {
+    const ik = uid();
+
+    setStep("s-task","active");
+    await DELAY(400);
+    const taskBody = {
+      goal: "Transfer funds to vendor account",
+      human_principal: "finance_controller",
+      agent_identity: "finance-agent",
+      completion_criteria: ["transfer_confirmed"],
+      allowed_tools: ["transfer_funds"],
+      idempotency_key: ik,
+      risk_budget: 100,
+      approval_requirements: ["human_principal","finance_authorizer"],
+      data_classification: "confidential",
+    };
+    const taskResp = await apiPost("/tasks", taskBody);
+    setStep("s-task","done");
+    addCard("📋","Task Contract","done",[
+      ["task_id",               `<code>${taskResp.data.task_id}</code>`],
+      ["goal",                  taskResp.data.goal],
+      ["approval_requirements", "human_principal, finance_authorizer"],
+      ["data_classification",   "confidential"],
+      ["outcome",               "<span style='color:var(--green)'>Created ✓</span>"],
+    ], taskResp.data);
+    addAudit("task_created","id="+taskResp.data.task_id+" goal=transfer_funds","t-created");
+    await DELAY(500);
+
+    setStep("s-obs","active");
+    await DELAY(400);
+    const obsBody = {
+      task_id: taskResp.data.task_id,
+      source_adapter: "http",
+      source_type: "account_balance",
+      freshness_deadline: new Date(Date.now() + 60000).toISOString(),
+      state_version: "v_fin_1",
+      confidence: 0.99,
+      raw_evidence_reference: "https://accounts.internal/balance",
+      correlation_id: uid(),
+    };
+    const obsResp = await apiPost("/observations", obsBody);
+    setStep("s-obs","done");
+    addCard("👁","Observation Recorded","done",[
+      ["source_type",  "account_balance"],
+      ["confidence",   "0.99"],
+      ["freshness",    "valid for 60 sec"],
+    ], obsResp.data);
+    addAudit("observation_recorded","version=v_fin_1 source=http/account_balance","t-created");
+    await DELAY(500);
+
+    setStep("s-propose","active");
+    await DELAY(400);
+    const actionBody = {
+      task_id: taskResp.data.task_id,
+      operation: "transfer_funds",
+      channel: "messaging",
+      target: { account: "vendor-7742", amount_cents: 50000 },
+      risk_class: "FINANCIAL",
+      idempotency_key: uid(),
+      requested_by: "finance-agent",
+      observation_version: "v_fin_1",
+      expected_effects: ["transfer_confirmed"],
+    };
+    setStep("s-propose","done");
+    addCard("📝","Action Proposed","done",[
+      ["operation",  "<code>transfer_funds</code>"],
+      ["channel",    "messaging"],
+      ["risk_class", "<span style='color:var(--amber)'>FINANCIAL</span>"],
+      ["target",     "vendor-7742 · $500.00"],
+    ], actionBody);
+    addAudit("action_proposed","op=transfer_funds channel=messaging risk=FINANCIAL","t-created");
+    await DELAY(500);
+
+    setStep("s-policy","active");
+    await DELAY(600);
+    const policyResp = await apiPost("/policy/evaluate", actionBody);
+    setStep("s-policy","waiting");
+    addCard("⚖️","Policy Decision","waiting",[
+      ["decision",           `<span style='color:var(--amber)'>${policyResp.data.decision}</span>`],
+      ["reason_codes",       policyResp.data.reason_codes?.join(", ")||"—"],
+      ["required_approvals", (policyResp.data.required_approvals||[]).join(", ")],
+      ["outcome",            "<span style='color:var(--amber)'>⏸ Execution blocked — human approval required</span>"],
+    ], policyResp.data);
+    addAudit("policy_require_approval","decision=require_approval risk=FINANCIAL","t-approval");
+    await DELAY(500);
+
+    setStep("s-approval","waiting");
+
+    await new Promise(resolve => {
+      addApprovalGate(
+        actionBody.action_id,
+        async () => {
+          setStep("s-approval","done");
+          addCard("👤","Approval Granted","done",[
+            ["decided_by", "finance_controller"],
+            ["decision",   "<span style='color:var(--green)'>approved</span>"],
+            ["outcome",    "<span style='color:var(--green)'>Gate passed — execution unblocked ✓</span>"],
+          ], null);
+          addAudit("approval_granted","decided_by=finance_controller","t-allowed");
+          await DELAY(500);
+          resolve();
+        },
+        async () => {
+          setStep("s-approval","denied");
+          setStep("s-exec","denied");
+          setStep("s-verify","denied");
+          addCard("👤","Approval Denied","denied",[
+            ["decided_by", "finance_controller"],
+            ["decision",   "<span style='color:var(--red)'>denied</span>"],
+            ["outcome",    "<span style='color:var(--red)'>Execution cancelled by operator</span>"],
+          ], null);
+          addAudit("approval_denied","decided_by=finance_controller","t-denied");
+          btn.disabled = false;
+          resolve("denied");
+        }
+      );
+    }).then(async result => {
+      if (result === "denied") return;
+
+      setStep("s-exec","active");
+      await DELAY(700);
+      const execResp = await apiPost("/actions/execute", actionBody);
+      const ev = execResp.data.evidence || execResp.data;
+      const vr = execResp.data.verification;
+      setStep("s-exec","done");
+      addCard("⚡","Action Executed","done",[
+        ["execution_id", `<code>${ev.execution_id||"—"}</code>`],
+        ["adapter",      ev.adapter||"messaging"],
+        ["status",       `<span style='color:var(--green)'>${ev.status||"success"}</span>`],
+      ], ev);
+      addAudit("action_executed","status="+(ev.status||"success")+" adapter=messaging","t-executed");
+      await DELAY(500);
+
+      setStep("s-verify","active");
+      await DELAY(500);
+      setStep("s-verify","done");
+      if (vr) {
+        addCard("✅","Verification Result","done",[
+          ["verdict",    `<span style='color:var(--green)'>${vr.verdict}</span>`],
+          ["confidence", vr.confidence],
+        ], vr);
+        addAudit("action_verified","verdict="+vr.verdict,"t-verified");
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // Scenario 3: DENIED — prohibited tool
+  // ══════════════════════════════════════════════════════════════
+  async function runDenied(btn) {
+    const ik = uid();
+
+    setStep("s-task","active");
+    await DELAY(400);
+    const taskBody = {
+      goal: "Read a file from the allowed directory",
+      human_principal: "operator",
+      agent_identity: "rogue-agent",
+      completion_criteria: ["file_read"],
+      allowed_tools: ["read_file"],
+      idempotency_key: ik,
+      risk_budget: 100,
+      data_classification: "internal",
+    };
+    const taskResp = await apiPost("/tasks", taskBody);
+    setStep("s-task","done");
+    addCard("📋","Task Contract","done",[
+      ["task_id",      `<code>${taskResp.data.task_id}</code>`],
+      ["allowed_tools","<code>read_file</code> only"],
+      ["note",         "<span style='color:var(--amber)'>The agent will attempt to call <code>delete_file</code> — not in allowed_tools</span>"],
+    ], taskResp.data);
+    addAudit("task_created","id="+taskResp.data.task_id+" allowed=read_file only","t-created");
+    await DELAY(500);
+
+    setStep("s-obs","active");
+    await DELAY(400);
+    const obsBody = {
+      task_id: taskResp.data.task_id,
+      source_adapter: "filesystem",
+      source_type: "file_listing",
+      freshness_deadline: new Date(Date.now() + 300000).toISOString(),
+      state_version: "v_deny_1",
+      confidence: 0.9,
+      raw_evidence_reference: "local://examples/tmp",
+      correlation_id: uid(),
+    };
+    await apiPost("/observations", obsBody);
+    setStep("s-obs","done");
+    addCard("👁","Observation Recorded","done",[
+      ["state_version","v_deny_1"],
+      ["source_type",  "file_listing"],
+    ], null);
+    addAudit("observation_recorded","version=v_deny_1 source=filesystem","t-created");
+    await DELAY(500);
+
+    setStep("s-propose","active");
+    await DELAY(400);
+    const actionBody = {
+      task_id: taskResp.data.task_id,
+      operation: "delete_file",
+      channel: "filesystem",
+      target: { path: "examples/tmp/ok.txt" },
+      risk_class: "REVERSIBLE_WRITE",
+      idempotency_key: uid(),
+      requested_by: "rogue-agent",
+      observation_version: "v_deny_1",
+      expected_effects: ["file_deleted"],
+    };
+    setStep("s-propose","done");
+    addCard("📝","Action Proposed","done",[
+      ["operation",  "<code>delete_file</code>"],
+      ["channel",    "filesystem"],
+      ["risk_class", "REVERSIBLE_WRITE"],
+      ["note",       "<span style='color:var(--red)'>⚠ This operation is not in task.allowed_tools</span>"],
+    ], actionBody);
+    addAudit("action_proposed","op=delete_file — NOT in allowed_tools","t-denied");
+    await DELAY(500);
+
+    setStep("s-policy","active");
+    await DELAY(600);
+    const policyResp = await apiPost("/policy/evaluate", actionBody);
+    setStep("s-policy","denied");
+    addCard("⚖️","Policy Decision — DENIED","denied",[
+      ["decision",     `<span style='color:var(--red)'>${policyResp.data.decision}</span>`],
+      ["reason_codes", (policyResp.data.reason_codes||["tool_not_allowed"]).join(", ")],
+      ["outcome",      "<span style='color:var(--red)'>❌ Execution blocked. Action will never reach the adapter.</span>"],
+    ], policyResp.data);
+    addAudit("policy_denied","decision=deny reason=tool_not_allowed","t-denied");
+    await DELAY(400);
+
+    setStep("s-approval","denied");
+    setStep("s-exec","denied");
+    setStep("s-verify","denied");
+
+    addCard("🛡","Default Deny in Action","denied",[
+      ["approved",         "<span style='color:var(--red)'>Never reached</span>"],
+      ["executed",         "<span style='color:var(--red)'>Never reached</span>"],
+      ["verified",         "<span style='color:var(--red)'>Never reached</span>"],
+      ["audit_entry",      "<span style='color:var(--green)'>✓ Denial recorded in immutable ledger</span>"],
+      ["conclusion",       "The agent cannot escape the task contract. Even if the model generates a delete request, it is structurally impossible to execute without being in allowed_tools."],
+    ], null);
+    addAudit("action_denied_final","op=delete_file blocked at policy stage","t-denied");
+  }
+
+  // ── Hidden form wiring (Playwright target) ─────────────────────
+  const form = document.getElementById("demo-form");
+  form.addEventListener("submit", ev => {
+    ev.preventDefault();
+    const name = document.getElementById("name").value || "unknown";
+    document.getElementById("status").textContent = "Submitted for " + name;
+  });
+</script>
+
+</body>
+</html>

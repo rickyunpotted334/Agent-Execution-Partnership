@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "action_id": "f6efb6ea-4dca-42bb-ba95-3ce8c7f8b177",
+  "task_id": "d7f3f257-b89b-4ec2-8e7e-958ef5fe1312",
+  "operation": "read_page",
+  "channel": "browser",
+  "target": {
+    "url": "http://127.0.0.1:8765"
+  },
+  "arguments": {},
+  "preconditions": ["page_accessible"],
+  "expected_effects": ["title_read"],
+  "prohibited_effects": ["external_write"],
+  "risk_class": "READ_ONLY",
+  "timeout_ms": 10000,
+  "idempotency_key": "demo-123",
+  "required_capabilities": [],
+  "requested_by": "agent.local",
+  "observation_version": "v1",
+  "metadata": {}
+}

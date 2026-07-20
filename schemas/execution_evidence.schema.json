@@ -1,0 +1,112 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "execution_id": {
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "adapter": {
+      "title": "Adapter",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "request_digest": {
+      "title": "Request Digest",
+      "type": "string"
+    },
+    "response_digest": {
+      "title": "Response Digest",
+      "type": "string"
+    },
+    "artifacts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "state_before_reference": {
+      "title": "State Before Reference",
+      "type": "string"
+    },
+    "state_after_reference": {
+      "title": "State After Reference",
+      "type": "string"
+    },
+    "resource_usage": {
+      "additionalProperties": true,
+      "title": "Resource Usage",
+      "type": "object"
+    },
+    "side_effects_detected": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Side Effects Detected",
+      "type": "array"
+    },
+    "logs_reference": {
+      "title": "Logs Reference",
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "retryable": {
+      "default": false,
+      "title": "Retryable",
+      "type": "boolean"
+    },
+    "compensation_available": {
+      "default": false,
+      "title": "Compensation Available",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "action_id",
+    "adapter",
+    "status",
+    "request_digest",
+    "response_digest",
+    "state_before_reference",
+    "state_after_reference",
+    "logs_reference"
+  ],
+  "title": "ExecutionEvidence",
+  "type": "object"
+}

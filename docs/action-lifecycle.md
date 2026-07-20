@@ -1,0 +1,7 @@
+# Action Lifecycle
+
+Deterministic lifecycle:
+
+PROPOSED -> VALIDATING -> DENIED | AWAITING_APPROVAL | AUTHORIZED -> PRECONDITION_CHECK -> READY -> EXECUTING -> VERIFYING -> VERIFIED | FAILED -> RECOVERING | COMPENSATING | ESCALATED
+
+Invalid transitions fail closed.

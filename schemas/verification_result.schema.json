@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "VerificationVerdict": {
+      "enum": [
+        "verified",
+        "failed",
+        "uncertain",
+        "stale",
+        "compensated",
+        "escalated"
+      ],
+      "title": "VerificationVerdict",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "verification_id": {
+      "title": "Verification Id",
+      "type": "string"
+    },
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "expected_effects_verified": {
+      "title": "Expected Effects Verified",
+      "type": "boolean"
+    },
+    "prohibited_effects_absent": {
+      "title": "Prohibited Effects Absent",
+      "type": "boolean"
+    },
+    "completion_criteria_progress": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Completion Criteria Progress",
+      "type": "number"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "evidence_references": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence References",
+      "type": "array"
+    },
+    "verdict": {
+      "$ref": "#/$defs/VerificationVerdict"
+    },
+    "recommended_next_state": {
+      "title": "Recommended Next State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action_id",
+    "expected_effects_verified",
+    "prohibited_effects_absent",
+    "completion_criteria_progress",
+    "confidence",
+    "verdict",
+    "recommended_next_state"
+  ],
+  "title": "VerificationResult",
+  "type": "object"
+}

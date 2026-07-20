@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "RiskClass": {
+      "enum": [
+        "READ_ONLY",
+        "REVERSIBLE_WRITE",
+        "CONSEQUENTIAL_WRITE",
+        "FINANCIAL",
+        "PRIVILEGED_ADMINISTRATIVE",
+        "PHYSICAL_OR_SAFETY_RELATED"
+      ],
+      "title": "RiskClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "operation": {
+      "title": "Operation",
+      "type": "string"
+    },
+    "channel": {
+      "title": "Channel",
+      "type": "string"
+    },
+    "target": {
+      "additionalProperties": true,
+      "title": "Target",
+      "type": "object"
+    },
+    "arguments": {
+      "additionalProperties": true,
+      "title": "Arguments",
+      "type": "object"
+    },
+    "preconditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Preconditions",
+      "type": "array"
+    },
+    "expected_effects": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Expected Effects",
+      "type": "array"
+    },
+    "prohibited_effects": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prohibited Effects",
+      "type": "array"
+    },
+    "risk_class": {
+      "$ref": "#/$defs/RiskClass"
+    },
+    "timeout_ms": {
+      "default": 10000,
+      "maximum": 120000,
+      "minimum": 1,
+      "title": "Timeout Ms",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "required_capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Capabilities",
+      "type": "array"
+    },
+    "requested_by": {
+      "title": "Requested By",
+      "type": "string"
+    },
+    "observation_version": {
+      "title": "Observation Version",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "task_id",
+    "operation",
+    "channel",
+    "target",
+    "risk_class",
+    "idempotency_key",
+    "requested_by",
+    "observation_version"
+  ],
+  "title": "ActionRequest",
+  "type": "object"
+}

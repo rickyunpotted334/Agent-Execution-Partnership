@@ -1,0 +1,10 @@
+{
+  "version": "aee-dataset-v1",
+  "splits": {
+    "train": "dataset/train.jsonl",
+    "validation": "dataset/validation.jsonl",
+    "safety": "dataset/safety.jsonl",
+    "holdout": "dataset/holdout.jsonl"
+  },
+  "holdout_mutable": false
+}

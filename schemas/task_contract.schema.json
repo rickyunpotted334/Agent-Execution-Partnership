@@ -1,0 +1,117 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "goal": {
+      "title": "Goal",
+      "type": "string"
+    },
+    "human_principal": {
+      "title": "Human Principal",
+      "type": "string"
+    },
+    "agent_identity": {
+      "title": "Agent Identity",
+      "type": "string"
+    },
+    "completion_criteria": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Completion Criteria",
+      "type": "array"
+    },
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints",
+      "type": "array"
+    },
+    "prohibited_effects": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prohibited Effects",
+      "type": "array"
+    },
+    "allowed_tools": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Tools",
+      "type": "array"
+    },
+    "allowed_resources": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Resources",
+      "type": "array"
+    },
+    "deadline": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deadline"
+    },
+    "risk_budget": {
+      "default": 100.0,
+      "minimum": 0,
+      "title": "Risk Budget",
+      "type": "number"
+    },
+    "approval_requirements": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approval Requirements",
+      "type": "array"
+    },
+    "data_classification": {
+      "default": "internal",
+      "title": "Data Classification",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "cancellation_conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cancellation Conditions",
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "goal",
+    "human_principal",
+    "agent_identity",
+    "completion_criteria",
+    "idempotency_key"
+  ],
+  "title": "TaskContract",
+  "type": "object"
+}

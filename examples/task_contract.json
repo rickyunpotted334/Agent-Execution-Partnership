@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "d7f3f257-b89b-4ec2-8e7e-958ef5fe1312",
+  "goal": "Read local safe webpage title",
+  "human_principal": "alice",
+  "agent_identity": "agent.local",
+  "completion_criteria": ["title_read"],
+  "constraints": ["local_only"],
+  "prohibited_effects": ["external_network_write"],
+  "allowed_tools": ["read_page", "list_dir", "read_file"],
+  "allowed_resources": ["localhost", "examples/local-demo-site"],
+  "deadline": null,
+  "risk_budget": 100,
+  "approval_requirements": [],
+  "data_classification": "internal",
+  "idempotency_key": "demo-123",
+  "cancellation_conditions": ["operator_cancel"],
+  "metadata": {}
+}

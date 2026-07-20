@@ -1,0 +1,81 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "observation_id": {
+      "title": "Observation Id",
+      "type": "string"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "source_adapter": {
+      "title": "Source Adapter",
+      "type": "string"
+    },
+    "source_type": {
+      "title": "Source Type",
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "freshness_deadline": {
+      "format": "date-time",
+      "title": "Freshness Deadline",
+      "type": "string"
+    },
+    "state_version": {
+      "title": "State Version",
+      "type": "string"
+    },
+    "provenance": {
+      "additionalProperties": true,
+      "title": "Provenance",
+      "type": "object"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "raw_evidence_reference": {
+      "title": "Raw Evidence Reference",
+      "type": "string"
+    },
+    "normalized_state": {
+      "additionalProperties": true,
+      "title": "Normalized State",
+      "type": "object"
+    },
+    "sensitive_fields_redacted": {
+      "default": true,
+      "title": "Sensitive Fields Redacted",
+      "type": "boolean"
+    },
+    "correlation_id": {
+      "title": "Correlation Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "source_adapter",
+    "source_type",
+    "freshness_deadline",
+    "state_version",
+    "confidence",
+    "raw_evidence_reference",
+    "correlation_id"
+  ],
+  "title": "Observation",
+  "type": "object"
+}

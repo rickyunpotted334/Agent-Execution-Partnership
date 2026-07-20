@@ -1,0 +1,40 @@
+terms:
+  - name: default_access
+    effect: deny
+  - name: read_only
+    effect: allow
+    when:
+      risk_class: READ_ONLY
+  - name: reversible_write
+    effect: allow
+    when:
+      risk_class: REVERSIBLE_WRITE
+  - name: high_risk_requires_approval
+    effect: require_approval
+    when:
+      risk_class_in:
+        - CONSEQUENTIAL_WRITE
+        - FINANCIAL
+        - PRIVILEGED_ADMINISTRATIVE
+        - PHYSICAL_OR_SAFETY_RELATED
+
+version: 2026-07-20
+default: deny
+controls:
+  READ_ONLY:
+    approval_required: false
+  REVERSIBLE_WRITE:
+    approval_required: false
+    audit_required: true
+  CONSEQUENTIAL_WRITE:
+    approval_required: true
+  FINANCIAL:
+    approval_required: true
+    hard_limits: true
+  PRIVILEGED_ADMINISTRATIVE:
+    approval_required: true
+    separation_of_duties: true
+  PHYSICAL_OR_SAFETY_RELATED:
+    approval_required: true
+    deterministic_controls_required: true
+

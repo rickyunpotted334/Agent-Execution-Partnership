@@ -1,0 +1,79 @@
+{
+  "$defs": {
+    "PolicyDecisionKind": {
+      "enum": [
+        "allow",
+        "deny",
+        "require_approval",
+        "require_more_observation",
+        "require_lower_risk_alternative"
+      ],
+      "title": "PolicyDecisionKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "action_id": {
+      "title": "Action Id",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/PolicyDecisionKind"
+    },
+    "reason_codes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reason Codes",
+      "type": "array"
+    },
+    "required_approvals": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Approvals",
+      "type": "array"
+    },
+    "constraints_added": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints Added",
+      "type": "array"
+    },
+    "expiration": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expiration"
+    },
+    "policy_version": {
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action_id",
+    "decision",
+    "policy_version"
+  ],
+  "title": "PolicyDecision",
+  "type": "object"
+}

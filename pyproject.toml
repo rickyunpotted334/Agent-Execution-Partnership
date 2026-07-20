@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-execution-partnership"
+version = "0.1.0"
+description = "An open-source control plane for authorized, observable, bounded, and verifiable AI agent actions."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [
+  { name = "Agent Execution Partnership" }
+]
+keywords = ["ai", "control-plane", "policy", "audit", "execution", "safety"]
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "typer>=0.12.0",
+  "pydantic>=2.8.0",
+  "pydantic-settings>=2.4.0",
+  "sqlalchemy>=2.0.32",
+  "alembic>=1.13.2",
+  "structlog>=24.4.0",
+  "opentelemetry-api>=1.27.0",
+  "httpx>=0.27.0",
+  "playwright>=1.46.0",
+  "python-dotenv>=1.0.1"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-cov>=5.0.0",
+  "hypothesis>=6.112.0",
+  "mypy>=1.11.0",
+  "ruff>=0.6.0",
+  "bandit>=1.7.9",
+  "types-PyYAML>=6.0.12.20240808"
+]
+train = [
+  "torch>=2.0.0",
+  "rustbpe>=0.1.0",
+  "tiktoken>=0.11.0",
+  "pyarrow>=21.0.0",
+  "requests>=2.32.0",
+]
+
+[project.scripts]
+aep = "aep.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aep"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --cov=src/aep --cov-report=term-missing --cov-fail-under=60"
+
+[tool.coverage.run]
+omit = [
+  # GPU/torch-required training infrastructure (needs CUDA + heavy deps)
+  "src/aep/models/gpt/model.py",
+  "src/aep/models/gpt/optimizer.py",
+  "src/aep/research/autoresearch/trainer.py",
+  "src/aep/research/data/pipeline.py",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "N"]
+ignore = ["S603", "S607", "E501", "UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+warn_return_any = true
+disallow_any_generics = true
+plugins = []

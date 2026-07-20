@@ -1,0 +1,20 @@
+terms:
+  - name: prohibit_desktop_sensitive_targets
+    effect: deny
+    targets:
+      - copilot_chat
+      - ide_chat_panel
+      - build_terminal
+      - auth_dialog
+      - password_manager
+      - security_software
+      - shutdown_controls
+
+desktop:
+  - copilot_chat
+  - ide_chat_panel
+  - build_terminal
+  - auth_dialog
+  - password_manager
+  - security_software
+  - shutdown_controls

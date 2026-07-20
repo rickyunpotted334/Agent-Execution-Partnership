@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: Agent Execution Partnership AEE
+message: If you use this software, please cite it using this metadata.
+type: software
+authors:
+  - family-names: Agent Execution Partnership
+repository-code: https://example.com/agent-execution-partnership
+license: Apache-2.0
+version: 0.1.0

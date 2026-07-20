@@ -1,0 +1,10 @@
+# Risk Classes
+
+- READ_ONLY
+- REVERSIBLE_WRITE
+- CONSEQUENTIAL_WRITE
+- FINANCIAL
+- PRIVILEGED_ADMINISTRATIVE
+- PHYSICAL_OR_SAFETY_RELATED
+
+Higher classes require stronger controls and approvals.
