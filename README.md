@@ -4,8 +4,7 @@
 
 <img width="1365" height="768" alt="aee" src="https://github.com/user-attachments/assets/e2750bff-53d3-4d7f-8596-71eb89bb0da1" />
 
-https://youtu.be/itK_PBwKzTA
-
+[![Watch the video](https://img.youtube.com/vi/itK_PBwKzTA/maxresdefault.jpg)](https://youtu.be/itK_PBwKzTA)
 The missing layer between AI reasoning and real-world execution.
 
 Agent Execution Partnership AEE is an open-source control plane that ensures every AI agent action is authorized before it runs, observable while it runs, and verifiable after it completes.
