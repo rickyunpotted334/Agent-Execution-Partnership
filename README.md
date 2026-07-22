@@ -226,7 +226,7 @@ See [examples/action_request.json](examples/action_request.json).
 
 ### Interactive Pipeline Visualization
 
-- **[Local Demo Site](examples/local-demo-site/README.md)** — Browser UI showing the 5-stage closed-loop cycle in real-time
+- **[Local Demo Site](https://aee.eli-labz.com/)** — Browser UI showing the 5-stage closed-loop cycle in real-time
   - Simulate actions and watch policy evaluation
   - Inspect audit trail entries for each stage
   - Observe state snapshots and verification results
