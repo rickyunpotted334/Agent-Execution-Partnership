@@ -1,2 +1,0 @@
-blank_issues_enabled: true
-contact_links: [{name: "Security vulnerability", url: "https://github.com/eli-labz/Agent-Execution-Partnership/security/policy", about: "Please report security vulnerabilities using our responsible disclosure process, not a public issue"}, {name: "Contributing guide", url: "https://github.com/eli-labz/Agent-Execution-Partnership/blob/main/CONTRIBUTING.md", about: "Read how to get involved before opening an issue or PR"}]
